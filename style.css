@@ -95,15 +95,14 @@ main {
   height: auto;
 }
 
-/* Blurred image — sits directly on top of the sharp one, full size */
+/* Blurred canvas — sits directly on top of the sharp image, uniform blur via JS */
 .tile-grid .grid-img-blur {
   position: absolute;
-  inset: -60px;
-  width: calc(100% + 120px);
-  height: calc(100% + 120px);
-  object-fit: cover;
-  filter: blur(60px);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+  display: block;
 }
 
 /* Tiles sit above the blurred image.
@@ -114,7 +113,7 @@ main {
   position: absolute;
   background-repeat: no-repeat;
   opacity: 0;
-  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.525s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
@@ -124,10 +123,9 @@ main {
 
 .image-hint {
   font-size: 0.7rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   color: var(--muted);
   text-align: center;
-  text-transform: uppercase;
 }
 
 /* ── QUESTION SIDE ── */

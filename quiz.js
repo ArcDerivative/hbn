@@ -89,24 +89,31 @@ function buildGrid() {
   // Layer 1: sharp image (bottom)
   const img = document.createElement("img");
   img.className = "grid-img";
+  img.crossOrigin = "anonymous";
   img.src = IMAGE_URL;
   img.alt = "";
   grid.appendChild(img);
 
-  // Layer 2: blurred image (middle) — same src, blurred via CSS filter
-  const imgBlur = document.createElement("img");
-  imgBlur.className = "grid-img-blur";
-  imgBlur.src = IMAGE_URL;
-  imgBlur.alt = "";
-  grid.appendChild(imgBlur);
+  // Layer 2: blurred canvas (middle) — drawn via JS so blur is uniform to all edges
+  const canvas = document.createElement("canvas");
+  canvas.className = "grid-img-blur";
+  grid.appendChild(canvas);
 
-  // Set grid height to match image natural aspect ratio
+  // Set grid height and draw blurred canvas once image loads
   const setGridHeight = () => {
     if (!img.naturalWidth) return;
-    const h = Math.round(img.naturalHeight * (grid.offsetWidth / img.naturalWidth));
+    const w = grid.offsetWidth;
+    const h = Math.round(img.naturalHeight * (w / img.naturalWidth));
     grid.style.height = h + "px";
-    // Re-set tile background-sizes now we know the rendered dimensions
-    setTileBackgrounds(grid.offsetWidth, h);
+
+    // Draw image into canvas at display size, then blur via StackBlur
+    canvas.width  = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, w, h);
+    stackBlurCanvas(canvas, 0, 0, w, h, 32);
+
+    setTileBackgrounds(w, h);
   };
   img.onload = setGridHeight;
   window.addEventListener("resize", setGridHeight, { passive: true });
