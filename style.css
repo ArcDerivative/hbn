@@ -1,0 +1,380 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0d0d0d;
+  --card: #141414;
+  --border: #2a2a2a;
+  --accent: #e8ff47;
+  --accent2: #ff4747;
+  --text: #f0f0f0;
+  --muted: #666;
+  --correct: #47ff8a;
+  --wrong: #ff4747;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+.logo span { color: var(--accent); }
+
+.score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+#score-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+#score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* ── MAIN ── */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem 1rem 4rem;
+  gap: 1.5rem;
+}
+
+/* ── QUIZ CARD ── */
+.quiz-card {
+  width: 100%;
+  max-width: 780px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 420px;
+}
+
+/* ── IMAGE SIDE ── */
+.image-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #080808;
+  min-height: 320px;
+}
+
+#quiz-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: blur(20px) brightness(0.6) saturate(0.4);
+  transform: scale(1.15);
+}
+
+#quiz-image.revealed {
+  filter: blur(0px) brightness(1) saturate(1);
+  transform: scale(1);
+}
+
+.blur-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.blur-overlay.hidden { opacity: 0; }
+
+.blur-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 6rem;
+  color: rgba(255,255,255,0.08);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  user-select: none;
+}
+.blur-label.hidden { opacity: 0; }
+
+.reveal-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: var(--correct);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 1px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.4s ease 0.6s;
+}
+.reveal-badge.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── QUESTION SIDE ── */
+.question-section {
+  padding: 2rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.question-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#q-counter {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+#q-category {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  text-transform: uppercase;
+  background: rgba(232, 255, 71, 0.08);
+  border: 1px solid rgba(232, 255, 71, 0.2);
+  padding: 0.2rem 0.6rem;
+  border-radius: 1px;
+}
+
+#question-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  color: var(--text);
+}
+
+/* ── CHOICES ── */
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.choice-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 400;
+  cursor: pointer;
+  border-radius: 1px;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.choice-btn .choice-key {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  min-width: 1rem;
+  transition: color 0.15s;
+}
+
+.choice-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: rgba(232, 255, 71, 0.05);
+  transform: translateX(2px);
+}
+.choice-btn:hover:not(:disabled) .choice-key { color: var(--accent); }
+
+.choice-btn.correct {
+  border-color: var(--correct);
+  background: rgba(71, 255, 138, 0.08);
+  color: var(--correct);
+}
+.choice-btn.correct .choice-key { color: var(--correct); }
+
+.choice-btn.wrong {
+  border-color: var(--wrong);
+  background: rgba(255, 71, 71, 0.08);
+  color: var(--wrong);
+}
+.choice-btn.wrong .choice-key { color: var(--wrong); }
+
+.choice-btn:disabled { cursor: default; }
+
+/* ── FEEDBACK ── */
+.feedback {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  min-height: 1.2rem;
+  color: var(--muted);
+  transition: all 0.3s ease;
+}
+.feedback.correct { color: var(--correct); }
+.feedback.wrong { color: var(--wrong); }
+
+/* ── NAV ── */
+.nav-row {
+  width: 100%;
+  max-width: 780px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-next {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 0.85rem 2.2rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  border-radius: 1px;
+  transition: all 0.15s ease;
+}
+.btn-next:hover {
+  background: #fff;
+  transform: translateX(2px);
+}
+
+/* ── END SCREEN ── */
+.end-screen {
+  width: 100%;
+  max-width: 780px;
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.end-inner {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 3.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.end-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+
+.end-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 5rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.end-inner p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  max-width: 320px;
+}
+
+.btn-restart {
+  margin-top: 1rem;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.85rem 2.5rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  border-radius: 1px;
+  transition: all 0.15s ease;
+}
+.btn-restart:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar-wrap {
+  width: 100%;
+  max-width: 780px;
+  height: 2px;
+  background: var(--border);
+}
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-card {
+  animation: fadeUp 0.4s ease forwards;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .quiz-card {
+    grid-template-columns: 1fr;
+  }
+  .image-wrap { min-height: 220px; }
+  #question-text { font-size: 1.25rem; }
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blur Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="logo">BLUR<span>QUIZ</span></div>
+    <div class="score-wrap">
+      <span id="score-label">SCORE</span>
+      <span id="score">0</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="quiz-card" id="quiz-card">
+
+      <div class="image-wrap">
+        <img id="quiz-image" src="" alt="Mystery image" />
+        <div class="blur-overlay" id="blur-overlay"></div>
+        <div class="blur-label" id="blur-label">?</div>
+        <div class="reveal-badge" id="reveal-badge">✓ REVEALED</div>
+      </div>
+
+      <div class="question-section">
+        <div class="question-meta">
+          <span id="q-counter">Question 1 / 5</span>
+          <span id="q-category"></span>
+        </div>
+        <h2 id="question-text"></h2>
+        <div class="choices" id="choices"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-next" id="btn-next" style="display:none">NEXT →</button>
+    </div>
+
+    <div class="end-screen" id="end-screen" style="display:none">
+      <div class="end-inner">
+        <div class="end-title">QUIZ COMPLETE</div>
+        <div class="end-score" id="end-score"></div>
+        <p id="end-msg"></p>
+        <button class="btn-restart" onclick="startQuiz()">PLAY AGAIN</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="quiz.js"></script>
+</body>
+</html>
