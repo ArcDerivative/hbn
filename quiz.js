@@ -336,6 +336,10 @@ function handleAnswer(selected, correct, btn) {
     });
 
     lastAnswerCorrect = false;
+    // Wrong question back into pool immediately
+    if (!questionPool.includes(currentQuestionIndex)) {
+      questionPool.push(currentQuestionIndex);
+    }
     const victim = pickReblurVictim();
     if (victim !== null) reblurTile(victim);
     $("feedback").textContent = pickFeedback(MSGS_WRONG);
