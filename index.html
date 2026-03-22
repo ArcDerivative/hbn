@@ -13,45 +13,58 @@
   <header>
     <div class="logo">BLUR<span>QUIZ</span></div>
     <div class="score-wrap">
-      <span id="score-label">SCORE</span>
-      <span id="score">0</span>
+      <span id="score-label">TILES</span>
+      <span id="score">0 / 9</span>
     </div>
   </header>
 
   <main>
-    <div class="quiz-card" id="quiz-card">
 
-      <div class="image-wrap">
-        <img id="quiz-image" src="" alt="Mystery image" />
-        <div class="blur-overlay" id="blur-overlay"></div>
-        <div class="blur-label" id="blur-label">?</div>
-        <div class="reveal-badge" id="reveal-badge">✓ REVEALED</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div class="layout" id="layout">
+
+      <!-- LEFT: tiled image -->
+      <div class="image-side">
+        <div class="tile-grid" id="tile-grid"></div>
+        <div class="image-hint" id="image-hint">Reveal all 9 tiles to unlock the secret</div>
       </div>
 
-      <div class="question-section">
+      <!-- RIGHT: question panel -->
+      <div class="question-side" id="quiz-card">
         <div class="question-meta">
-          <span id="q-counter">Question 1 / 5</span>
+          <span id="q-counter">Question 1</span>
           <span id="q-category"></span>
         </div>
         <h2 id="question-text"></h2>
         <div class="choices" id="choices"></div>
         <div class="feedback" id="feedback"></div>
+        <button class="btn-next" id="btn-next" style="display:none">NEXT →</button>
       </div>
 
     </div>
 
-    <div class="nav-row">
-      <button class="btn-next" id="btn-next" style="display:none">NEXT →</button>
+    <!-- Secret overlay — shown when all 9 tiles are clear -->
+    <div class="secret-overlay" id="secret-overlay" style="display:none">
+      <div class="secret-inner">
+        <div class="secret-eyebrow">🔓 SECRET UNLOCKED</div>
+        <div class="secret-msg" id="secret-msg"></div>
+        <button class="btn-restart" onclick="startQuiz()">PLAY AGAIN</button>
+      </div>
     </div>
 
+    <!-- End screen — questions ran out before all tiles revealed -->
     <div class="end-screen" id="end-screen" style="display:none">
       <div class="end-inner">
         <div class="end-title">QUIZ COMPLETE</div>
         <div class="end-score" id="end-score"></div>
         <p id="end-msg"></p>
-        <button class="btn-restart" onclick="startQuiz()">PLAY AGAIN</button>
+        <button class="btn-restart" onclick="startQuiz()">TRY AGAIN</button>
       </div>
     </div>
+
   </main>
 
   <script src="quiz.js"></script>
