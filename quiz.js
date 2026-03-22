@@ -209,6 +209,12 @@ function reblurTile(index) {
   revealedTiles = revealedTiles.filter(t => t !== index);
   tilePool.push(index);
   updateScore();
+  // Re-open one random correctly-answered question so the pool can't deadlock
+  if (correctlyAnswered.size > 0) {
+    const solved = [...correctlyAnswered];
+    const reopen = solved[Math.floor(Math.random() * solved.length)];
+    correctlyAnswered.delete(reopen);
+  }
 }
 
 // Only re-blur tiles from the current stage (don't claw back earlier stages)
