@@ -36,12 +36,12 @@
     ]
   },
   {
-    "question": "What animal says 'moo'?",
+    "question": "Dad once upgraded the family's long-haul flight to:",
     "choices": [
-      "Cow",
-      "Pig",
-      "Dog",
-      "Horse"
+      "Singapore: Suites Class",
+      "Etihad: The Residence",
+      "Japan Airlines: \"You must be tired from your long journey here~\" class",
+      "A SpaceX charter mission with two loops around the sun"
     ]
   },
   {
