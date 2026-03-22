@@ -331,9 +331,6 @@ function handleAnswer(selected, correct, btn) {
     });
   } else {
     btn.classList.add("wrong");
-    allBtns.forEach(b => {
-      if (b.textContent.includes(correct)) b.classList.add("correct");
-    });
 
     lastAnswerCorrect = false;
     // Wrong question back into pool immediately
