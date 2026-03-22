@@ -260,7 +260,7 @@ function handleAnswer(selected, correct, btn) {
     const tileIndex = tilePool.pop(); // tilePool is pre-shuffled
     revealTile(tileIndex);
 
-    $("feedback").textContent = `✓ Correct! Tile ${revealedTiles.length} of 9 revealed.`;
+    $("feedback").textContent = "Yes";
     $("feedback").className = "feedback correct";
 
     allBtns.forEach(b => {
@@ -276,9 +276,9 @@ function handleAnswer(selected, correct, btn) {
     if (revealedTiles.length > 0) {
       const victim = pickRandom(revealedTiles);
       reblurTile(victim);
-      $("feedback").textContent = `✗ Wrong — answer was "${correct}". A tile was re-blurred!`;
+      $("feedback").textContent = "No";
     } else {
-      $("feedback").textContent = `✗ Wrong — answer was "${correct}". No tiles to re-blur.`;
+      $("feedback").textContent = "No";
     }
     $("feedback").className = "feedback wrong";
   }
