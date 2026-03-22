@@ -124,7 +124,7 @@ main {
 }
 
 .image-hint {
-  font-size: 1.05rem;
+  font-size: 1.4rem;
   letter-spacing: 0.04em;
   color: var(--muted);
   text-align: center;
@@ -179,7 +179,7 @@ main {
   padding: 0.7rem 1rem;
   text-align: left;
   font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-  font-size: clamp(1.125rem, 2.1vw, 1.305rem);
+  font-size: 1rem;
   cursor: pointer;
   border-radius: 1px;
   transition: all 0.13s ease;
@@ -192,7 +192,7 @@ main {
 
 .choice-btn .key {
   font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-  font-size: 1.23rem;
+  font-size: 1rem;
   color: var(--muted);
   letter-spacing: 0.1em;
   min-width: 1rem;
@@ -214,7 +214,7 @@ main {
 
 /* ── FEEDBACK ── */
 .feedback {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.04em;
   min-height: 1.6rem;
