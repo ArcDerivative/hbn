@@ -364,6 +364,14 @@ function showSecret() {
   $("layout").style.display = "none";
   $("secret-msg").textContent = SECRET_MESSAGE;
   $("secret-overlay").style.display = "flex";
+
+  // Download nad.png at full size as nreaking-nad.png
+  const a = document.createElement("a");
+  a.href = IMAGE_URL;
+  a.download = "nreaking-nad.png";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 // ─────────────────────────────────────────────
