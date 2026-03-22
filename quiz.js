@@ -14,9 +14,8 @@ let revealedTiles = [];       // all currently-revealed tile indices
 let stageIndex = 0;           // which stage we're drawing from
 let tilePool = [];            // remaining tiles in current stage (shuffled)
 let answered = false;
-let correctlyAnswered = new Set(); // indices of questions answered correctly
-let pendingQueue = [];         // unanswered/wrong questions, shuffled
-let pendingSet = new Set();    // fast lookup for pendingQueue contents
+let correctlyAnswered = new Set(); // indices answered correctly — never shown again
+let questionPool = [];             // current shuffle of remaining questions
 let currentQuestionIndex = 0;
 let lastAnswerCorrect = null; // null = start of game, true/false thereafter
 let lastFeedbackMsg = null;
@@ -231,16 +230,12 @@ function updateScore() {
 // When a wrong answer is given, that question stays/re-enters the pending pool.
 // The last question shown will always be one that hasn't been cracked yet.
 function nextQuestion() {
-  if (pendingQueue.length === 0) {
-    // Refill with all not-yet-correctly-answered questions, reshuffled
-    pendingQueue = shuffle(
+  if (questionPool.length === 0) {
+    questionPool = shuffle(
       [...Array(QUESTIONS.length).keys()].filter(i => !correctlyAnswered.has(i))
     );
-    pendingSet = new Set(pendingQueue);
   }
-  const qi = pendingQueue.shift();
-  pendingSet.delete(qi);
-  return qi;
+  return questionPool.shift();
 }
 
 function startQuiz() {
@@ -248,8 +243,7 @@ function startQuiz() {
   stageIndex = 0;
   tilePool = shuffle([...TILE_STAGES[0]]);
   correctlyAnswered = new Set();
-  pendingQueue = [];
-  pendingSet = new Set();
+  questionPool = [];
   lastAnswerCorrect = null;
   lastFeedbackMsg = null;
   lastCounterMsg = null;
@@ -330,12 +324,6 @@ function handleAnswer(selected, correct, btn) {
     });
 
     lastAnswerCorrect = false;
-    // Re-add this question to pending if not already queued
-    if (!pendingSet.has(currentQuestionIndex)) {
-      pendingQueue.push(currentQuestionIndex);
-      pendingSet.add(currentQuestionIndex);
-    }
-
     const victim = pickReblurVictim();
     if (victim !== null) reblurTile(victim);
     $("feedback").textContent = pickFeedback(MSGS_WRONG);
