@@ -22,10 +22,11 @@ const QUESTIONS = [
 //  STATE
 // ─────────────────────────────────────────────
 const TOTAL_TILES = 25;
-let revealedTiles = [];   // indices of currently-revealed tiles
-let tilePool = [];        // unrevealed tile indices available to assign
+let revealedTiles = [];   // all currently-revealed tile indices
+let stageIndex = 0;       // which stage we're drawing from
+let tilePool = [];        // remaining tiles in current stage (shuffled)
 let answered = false;
-let questionQueue = [];   // infinite shuffled queue of question indices
+let questionQueue = [];
 
 // ─────────────────────────────────────────────
 //  HELPERS
@@ -44,6 +45,17 @@ function shuffle(arr) {
 function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
+
+// ─────────────────────────────────────────────
+//  TILE STAGES
+//  Outer ring first, then inner U, then centre, then above-centre.
+// ─────────────────────────────────────────────
+const TILE_STAGES = [
+  shuffle([0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24]), // outer ring (16)
+  shuffle([6,8,11,13,16,17,18]),                         // inner U    (7)
+  [12],                                                   // centre     (1)
+  [7],                                                    // above-ctr  (1)
+];
 
 // ─────────────────────────────────────────────
 //  BUILD TILE GRID
@@ -117,18 +129,28 @@ function buildGrid() {
 //  TILE OPERATIONS
 // ─────────────────────────────────────────────
 function revealTile(index) {
-  const tile = $(`tile-${index}`);
-  tile.classList.add("revealed");
+  $(`tile-${index}`).classList.add("revealed");
   revealedTiles.push(index);
+  // If current stage pool is now empty, load next stage
+  if (tilePool.length === 0 && stageIndex < TILE_STAGES.length - 1) {
+    stageIndex++;
+    tilePool = shuffle([...TILE_STAGES[stageIndex]]);
+  }
   updateScore();
 }
 
 function reblurTile(index) {
-  const tile = $(`tile-${index}`);
-  tile.classList.remove("revealed");
+  $(`tile-${index}`).classList.remove("revealed");
   revealedTiles = revealedTiles.filter(t => t !== index);
   tilePool.push(index);
   updateScore();
+}
+
+// Only re-blur tiles from the current stage (don't claw back earlier stages)
+function pickReblurVictim() {
+  const currentStage = TILE_STAGES[stageIndex];
+  const eligible = revealedTiles.filter(t => currentStage.includes(t));
+  return eligible.length > 0 ? pickRandom(eligible) : null;
 }
 
 function updateScore() {
@@ -148,7 +170,8 @@ function nextQuestion() {
 
 function startQuiz() {
   revealedTiles = [];
-  tilePool = shuffle([...Array(TOTAL_TILES).keys()]);
+  stageIndex = 0;
+  tilePool = shuffle([...TILE_STAGES[0]]);
   questionQueue = [];
 
   $("secret-overlay").style.display = "none";
