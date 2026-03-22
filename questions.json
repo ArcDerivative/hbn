@@ -1,0 +1,127 @@
+[
+  {
+    "question": "What colour is the sky on a clear day?",
+    "choices": ["Blue", "Green", "Red", "Yellow"],
+    "answer": "Blue"
+  },
+  {
+    "question": "How many days are in a week?",
+    "choices": ["5", "6", "7", "8"],
+    "answer": "7"
+  },
+  {
+    "question": "What is the capital of France?",
+    "choices": ["Berlin", "Madrid", "Paris", "Rome"],
+    "answer": "Paris"
+  },
+  {
+    "question": "How many sides does a triangle have?",
+    "choices": ["2", "3", "4", "5"],
+    "answer": "3"
+  },
+  {
+    "question": "What animal says 'moo'?",
+    "choices": ["Pig", "Cow", "Dog", "Horse"],
+    "answer": "Cow"
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "choices": ["Earth", "Mars", "Saturn", "Jupiter"],
+    "answer": "Jupiter"
+  },
+  {
+    "question": "How many legs does a dog have?",
+    "choices": ["2", "3", "4", "6"],
+    "answer": "4"
+  },
+  {
+    "question": "What colour are bananas?",
+    "choices": ["Red", "Blue", "Yellow", "Green"],
+    "answer": "Yellow"
+  },
+  {
+    "question": "In which country is the Great Wall located?",
+    "choices": ["Japan", "India", "China", "Egypt"],
+    "answer": "China"
+  },
+  {
+    "question": "How many hours are in a day?",
+    "choices": ["12", "18", "24", "48"],
+    "answer": "24"
+  },
+  {
+    "question": "What do bees make?",
+    "choices": ["Milk", "Honey", "Butter", "Jam"],
+    "answer": "Honey"
+  },
+  {
+    "question": "Which planet do we live on?",
+    "choices": ["Mars", "Venus", "Earth", "Jupiter"],
+    "answer": "Earth"
+  },
+  {
+    "question": "How many months are in a year?",
+    "choices": ["10", "11", "12", "13"],
+    "answer": "12"
+  },
+  {
+    "question": "What is the opposite of hot?",
+    "choices": ["Warm", "Cold", "Wet", "Dry"],
+    "answer": "Cold"
+  },
+  {
+    "question": "Which ocean is the largest?",
+    "choices": ["Atlantic", "Indian", "Arctic", "Pacific"],
+    "answer": "Pacific"
+  },
+  {
+    "question": "What colour is grass?",
+    "choices": ["Blue", "Brown", "Green", "Purple"],
+    "answer": "Green"
+  },
+  {
+    "question": "How many continents are there on Earth?",
+    "choices": ["5", "6", "7", "8"],
+    "answer": "7"
+  },
+  {
+    "question": "What do you call a baby dog?",
+    "choices": ["Kitten", "Foal", "Cub", "Puppy"],
+    "answer": "Puppy"
+  },
+  {
+    "question": "What is the capital of England?",
+    "choices": ["Manchester", "Birmingham", "London", "Edinburgh"],
+    "answer": "London"
+  },
+  {
+    "question": "How many zeros are in one hundred?",
+    "choices": ["1", "2", "3", "4"],
+    "answer": "2"
+  },
+  {
+    "question": "What shape is a football?",
+    "choices": ["Cube", "Flat", "Sphere", "Pyramid"],
+    "answer": "Sphere"
+  },
+  {
+    "question": "What is H2O commonly known as?",
+    "choices": ["Salt", "Sugar", "Water", "Oxygen"],
+    "answer": "Water"
+  },
+  {
+    "question": "How many wheels does a bicycle have?",
+    "choices": ["1", "2", "3", "4"],
+    "answer": "2"
+  },
+  {
+    "question": "What is the fastest land animal?",
+    "choices": ["Lion", "Horse", "Cheetah", "Greyhound"],
+    "answer": "Cheetah"
+  },
+  {
+    "question": "What colour is snow?",
+    "choices": ["Grey", "Blue", "Yellow", "White"],
+    "answer": "White"
+  }
+]

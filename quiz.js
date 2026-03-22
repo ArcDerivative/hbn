@@ -1,32 +1,23 @@
 // ─────────────────────────────────────────────
 //  CONFIG
 // ─────────────────────────────────────────────
-
-// The single image all questions are about.
-// Swap this URL for any image you like.
 const IMAGE_URL = "nad.png";
-
-// Shown when all 25 tiles are revealed.
 const SECRET_MESSAGE = "Animals are awesome 🐾";
 
-const QUESTIONS = [
-  {
-    category: "",
-    question: "Is this question just a test?",
-    choices: ["Yes", "No", "No", "No"],
-    answer: "Yes",
-  },
-];
+let QUESTIONS = []; // loaded from questions.json
 
 // ─────────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────────
 const TOTAL_TILES = 25;
-let revealedTiles = [];   // all currently-revealed tile indices
-let stageIndex = 0;       // which stage we're drawing from
-let tilePool = [];        // remaining tiles in current stage (shuffled)
+let revealedTiles = [];       // all currently-revealed tile indices
+let stageIndex = 0;           // which stage we're drawing from
+let tilePool = [];            // remaining tiles in current stage (shuffled)
 let answered = false;
-let questionQueue = [];
+let correctlyAnswered = new Set(); // indices of questions answered correctly
+let pendingQueue = [];         // unanswered/wrong questions, shuffled
+let pendingSet = new Set();    // fast lookup for pendingQueue contents
+let currentQuestionIndex = 0;
 
 // ─────────────────────────────────────────────
 //  HELPERS
@@ -190,19 +181,31 @@ function updateScore() {
 // ─────────────────────────────────────────────
 //  START
 // ─────────────────────────────────────────────
+
+// Returns the index of the next question to ask.
+// Priority: questions not yet answered correctly, in shuffled order.
+// When a wrong answer is given, that question stays/re-enters the pending pool.
+// The last question shown will always be one that hasn't been cracked yet.
 function nextQuestion() {
-  // Refill queue when empty (infinite shuffle loop)
-  if (questionQueue.length === 0) {
-    questionQueue = shuffle([...Array(QUESTIONS.length).keys()]);
+  if (pendingQueue.length === 0) {
+    // Refill with all not-yet-correctly-answered questions, reshuffled
+    pendingQueue = shuffle(
+      [...Array(QUESTIONS.length).keys()].filter(i => !correctlyAnswered.has(i))
+    );
+    pendingSet = new Set(pendingQueue);
   }
-  return questionQueue.shift();
+  const qi = pendingQueue.shift();
+  pendingSet.delete(qi);
+  return qi;
 }
 
 function startQuiz() {
   revealedTiles = [];
   stageIndex = 0;
   tilePool = shuffle([...TILE_STAGES[0]]);
-  questionQueue = [];
+  correctlyAnswered = new Set();
+  pendingQueue = [];
+  pendingSet = new Set();
 
   $("secret-overlay").style.display = "none";
   $("end-screen").style.display = "none";
@@ -218,12 +221,11 @@ function startQuiz() {
 // ─────────────────────────────────────────────
 function loadQuestion() {
   answered = false;
-  const qi = nextQuestion();
-  const q = QUESTIONS[qi];
-  const tilesLeft = TOTAL_TILES - revealedTiles.length;
+  currentQuestionIndex = nextQuestion();
+  const q = QUESTIONS[currentQuestionIndex];
 
   $("q-counter").textContent = "TODO";
-  $("q-category").textContent = q.category;
+  $("q-category").textContent = q.category || "";
   $("question-text").textContent = q.question;
 
   // Choices
@@ -262,9 +264,9 @@ function handleAnswer(selected, correct, btn) {
 
   if (selected === correct) {
     btn.classList.add("correct");
+    correctlyAnswered.add(currentQuestionIndex);
 
-    // Reveal a random unrevealed tile
-    const tileIndex = tilePool.pop(); // tilePool is pre-shuffled
+    const tileIndex = tilePool.pop();
     revealTile(tileIndex);
 
     $("feedback").textContent = "Yes";
@@ -279,14 +281,15 @@ function handleAnswer(selected, correct, btn) {
       if (b.textContent.includes(correct)) b.classList.add("correct");
     });
 
-    // Re-blur a random already-revealed tile (if any)
-    if (revealedTiles.length > 0) {
-      const victim = pickRandom(revealedTiles);
-      reblurTile(victim);
-      $("feedback").textContent = "No";
-    } else {
-      $("feedback").textContent = "No";
+    // Re-add this question to pending if not already queued
+    if (!pendingSet.has(currentQuestionIndex)) {
+      pendingQueue.push(currentQuestionIndex);
+      pendingSet.add(currentQuestionIndex);
     }
+
+    const victim = pickReblurVictim();
+    if (victim !== null) reblurTile(victim);
+    $("feedback").textContent = "No";
     $("feedback").className = "feedback wrong";
   }
 
@@ -314,6 +317,9 @@ function showSecret() {
 }
 
 // ─────────────────────────────────────────────
-//  GO
+//  BOOT — fetch questions then start
 // ─────────────────────────────────────────────
-startQuiz();
+fetch("questions.json")
+  .then(r => r.json())
+  .then(data => { QUESTIONS = data; startQuiz(); })
+  .catch(err => { console.error("Failed to load questions:", err); });
