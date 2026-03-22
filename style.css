@@ -5,12 +5,12 @@
 }
 
 :root {
-  --bg: #0d0d0d;
-  --card: #141414;
-  --border: #2a2a2a;
-  --accent: #e8ff47;
-  --text: #f0f0f0;
-  --muted: #555;
+  --bg: #0a0d12;
+  --card: #0f1420;
+  --border: #1e2535;
+  --accent: #4a7fff;
+  --text: #e8edf5;
+  --muted: #4a5568;
   --correct: #47ff8a;
   --wrong: #ff4747;
   --blur-amount: 18px;
@@ -42,8 +42,8 @@ header {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.8rem;
   letter-spacing: 0.08em;
+  color: var(--accent);
 }
-.logo span { color: var(--accent); }
 
 .score-wrap {
   display: flex;
@@ -131,24 +131,15 @@ main {
   transform: scale(1);
 }
 
-/* Flash animations */
+/* Flash animations — operate on outline only, don't touch filter/transform */
 .tile.flash-correct {
-  animation: flashCorrect 0.5s ease forwards;
+  outline: 3px solid var(--correct);
+  outline-offset: -3px;
 }
+
 .tile.flash-wrong {
-  animation: flashWrong 0.5s ease forwards;
-}
-
-@keyframes flashCorrect {
-  0%   { outline: 0px solid var(--correct); }
-  50%  { outline: 3px solid var(--correct); filter: blur(0px) brightness(1.3) saturate(1.2); transform: scale(1); }
-  100% { outline: 0px solid var(--correct); }
-}
-
-@keyframes flashWrong {
-  0%   { outline: 0px solid var(--wrong); }
-  50%  { outline: 3px solid var(--wrong); filter: blur(24px) brightness(0.35) saturate(0.2); transform: scale(1.12); }
-  100% { outline: 0px solid var(--wrong); }
+  outline: 3px solid var(--wrong);
+  outline-offset: -3px;
 }
 
 .image-hint {

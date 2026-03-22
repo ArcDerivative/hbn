@@ -4,67 +4,67 @@
 
 // The single image all questions are about.
 // Swap this URL for any image you like.
-const IMAGE_URL = "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=900&q=80";
+const IMAGE_URL = "nad.png";
 
 // Shown when all 9 tiles are revealed.
-const SECRET_MESSAGE = "The Eiffel Tower was built in 1889";
+const SECRET_MESSAGE = "Animals are awesome 🐾";
 
 // All 9 questions. Exactly 9 — one per tile.
 // You can reorder them; they are asked in order.
 const QUESTIONS = [
   {
-    category: "History",
-    question: "In what year was the Eiffel Tower completed?",
-    choices: ["1889", "1901", "1876", "1912"],
-    answer: "1889",
+    category: "Animals",
+    question: "What do cows drink?",
+    choices: ["Milk", "Water", "Juice", "Tea"],
+    answer: "Water",
   },
   {
-    category: "Geography",
-    question: "The Eiffel Tower is located in which city?",
-    choices: ["Lyon", "Marseille", "Paris", "Bordeaux"],
-    answer: "Paris",
+    category: "Animals",
+    question: "How many legs does a spider have?",
+    choices: ["6", "8", "10", "4"],
+    answer: "8",
   },
   {
-    category: "Engineering",
-    question: "What material is the Eiffel Tower primarily made of?",
-    choices: ["Steel", "Concrete", "Iron", "Aluminium"],
-    answer: "Iron",
+    category: "Animals",
+    question: "What is the fastest land animal?",
+    choices: ["Lion", "Horse", "Cheetah", "Greyhound"],
+    answer: "Cheetah",
   },
   {
-    category: "Facts",
-    question: "How tall is the Eiffel Tower (to the top)?",
-    choices: ["210 m", "300 m", "330 m", "276 m"],
-    answer: "330 m",
+    category: "Animals",
+    question: "Which animal is known as man's best friend?",
+    choices: ["Cat", "Rabbit", "Dog", "Horse"],
+    answer: "Dog",
   },
   {
-    category: "History",
-    question: "Who designed the Eiffel Tower?",
-    choices: ["Auguste Perret", "Gustave Eiffel", "Le Corbusier", "Hector Guimard"],
-    answer: "Gustave Eiffel",
+    category: "Animals",
+    question: "What sound does a duck make?",
+    choices: ["Moo", "Quack", "Oink", "Baa"],
+    answer: "Quack",
   },
   {
-    category: "Facts",
-    question: "How many times is the Eiffel Tower repainted?",
-    choices: ["Every 2 years", "Every 5 years", "Every 7 years", "Every 10 years"],
-    answer: "Every 7 years",
+    category: "Animals",
+    question: "Which animal has a very long neck?",
+    choices: ["Elephant", "Hippo", "Giraffe", "Zebra"],
+    answer: "Giraffe",
   },
   {
-    category: "History",
-    question: "For what event was the Eiffel Tower originally built?",
-    choices: ["The 1900 Paris Expo", "The 1889 World's Fair", "Napoleon's coronation", "The French Revolution"],
-    answer: "The 1889 World's Fair",
+    category: "Animals",
+    question: "Where do penguins live in the wild?",
+    choices: ["The Arctic", "The Sahara", "The Amazon", "Antarctica"],
+    answer: "Antarctica",
   },
   {
-    category: "Facts",
-    question: "How many steps are there to the top of the Eiffel Tower?",
-    choices: ["1,165", "704", "1,665", "1,000"],
-    answer: "1,665",
+    category: "Animals",
+    question: "What is a baby cat called?",
+    choices: ["Pup", "Cub", "Kitten", "Foal"],
+    answer: "Kitten",
   },
   {
-    category: "Geography",
-    question: "On which river does the Eiffel Tower sit?",
-    choices: ["Loire", "Rhône", "Seine", "Garonne"],
-    answer: "Seine",
+    category: "Animals",
+    question: "Which animal is the largest on Earth?",
+    choices: ["Elephant", "Blue Whale", "Giraffe", "Great White Shark"],
+    answer: "Blue Whale",
   },
 ];
 
@@ -128,20 +128,22 @@ function buildGrid() {
 function revealTile(index) {
   const tile = $(`tile-${index}`);
   tile.classList.remove("flash-wrong");
-  void tile.offsetWidth; // reflow to restart animation
-  tile.classList.add("revealed", "flash-correct");
+  tile.classList.add("revealed");
+  setTimeout(() => tile.classList.add("flash-correct"), 50);
+  setTimeout(() => tile.classList.remove("flash-correct"), 650);
   revealedTiles.push(index);
   updateScore();
 }
 
 function reblurTile(index) {
   const tile = $(`tile-${index}`);
-  tile.classList.remove("revealed", "flash-correct");
-  void tile.offsetWidth;
   tile.classList.add("flash-wrong");
-  revealedTiles = revealedTiles.filter(t => t !== index);
-  tilePool.push(index);
-  updateScore();
+  setTimeout(() => {
+    tile.classList.remove("revealed", "flash-wrong");
+    revealedTiles = revealedTiles.filter(t => t !== index);
+    tilePool.push(index);
+    updateScore();
+  }, 400);
 }
 
 function updateScore() {
