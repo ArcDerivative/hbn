@@ -230,11 +230,16 @@ function updateScore() {
 // When a wrong answer is given, that question stays/re-enters the pending pool.
 // The last question shown will always be one that hasn't been cracked yet.
 function nextQuestion() {
+  // Drop any items that have since been correctly answered
+  questionPool = questionPool.filter(i => !correctlyAnswered.has(i));
+
   if (questionPool.length === 0) {
-    questionPool = shuffle(
-      [...Array(QUESTIONS.length).keys()].filter(i => !correctlyAnswered.has(i))
-    );
+    const remaining = [...Array(QUESTIONS.length).keys()]
+      .filter(i => !correctlyAnswered.has(i));
+    if (remaining.length === 0) return null; // all correctly answered
+    questionPool = shuffle(remaining);
   }
+
   return questionPool.shift();
 }
 
@@ -262,6 +267,7 @@ function startQuiz() {
 function loadQuestion() {
   answered = false;
   currentQuestionIndex = nextQuestion();
+  if (currentQuestionIndex === null) return; // all questions correctly answered
   const q = QUESTIONS[currentQuestionIndex];
 
   $("q-counter").textContent = (lastAnswerCorrect === false) ? pickCounter(MSGS_COUNTER_BAD) : pickCounter(MSGS_COUNTER_GOOD);
