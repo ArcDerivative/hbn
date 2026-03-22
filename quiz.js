@@ -52,37 +52,45 @@ function pickRandom(arr) {
 const RATIOS = [1, 2, 3, 2, 1]; // ratio 1:2:3:2:1
 const RATIO_TOTAL = RATIOS.reduce((a, b) => a + b, 0); // 9
 
-// Cumulative offsets as percentages of total, for background-position
-function ratioOffsets(ratios, total) {
-  const offsets = [0];
+// Convert ratio array to cumulative percentage positions and sizes
+// e.g. [1,2,3,2,1] total=9 → positions: [0, 11.11, 33.33, 66.67, 77.78]
+//                           → sizes:     [11.11, 22.22, 33.33, 22.22, 11.11]
+function ratioLayout(ratios, total) {
+  const sizes = ratios.map(r => r / total * 100);
+  const positions = [];
   let cum = 0;
-  for (let i = 0; i < ratios.length - 1; i++) {
-    cum += ratios[i];
-    offsets.push(cum / total * 100);
+  for (const s of sizes) {
+    positions.push(cum);
+    cum += s;
   }
-  return offsets; // [0, 11.11, 33.33, 66.67, 77.78] roughly
+  return { positions, sizes };
 }
+
+const GAP_PX = 3; // matches CSS gap visually via inset
 
 function buildGrid() {
   const grid = $("tile-grid");
   grid.innerHTML = "";
 
-  const colOffsets = ratioOffsets(RATIOS, RATIO_TOTAL);
-  const rowOffsets = ratioOffsets(RATIOS, RATIO_TOTAL);
+  // Single image fills the container
+  const img = document.createElement("img");
+  img.className = "grid-img";
+  img.src = IMAGE_URL;
+  img.alt = "";
+  grid.appendChild(img);
 
-  const probe = new Image();
-  const setHeights = () => {
-    if (!probe.naturalHeight) return;
-    const totalH = Math.round(probe.naturalHeight * (grid.offsetWidth / probe.naturalWidth));
-    // Each row's pixel height proportional to its ratio
-    const rowHeights = RATIOS.map(r => Math.round(totalH * r / RATIO_TOTAL));
-    grid.querySelectorAll(".tile").forEach(t => {
-      const row = parseInt(t.dataset.row);
-      t.style.height = rowHeights[row] + "px";
-    });
+  // Set grid height to match image natural aspect ratio
+  const setGridHeight = () => {
+    if (!img.naturalWidth) return;
+    const h = Math.round(img.naturalHeight * (grid.offsetWidth / img.naturalWidth));
+    grid.style.height = h + "px";
   };
-  probe.onload = setHeights;
-  probe.src = IMAGE_URL;
+  img.onload = setGridHeight;
+  window.addEventListener("resize", setGridHeight, { passive: true });
+
+  // Build 25 absolutely-positioned blur overlay tiles
+  const { positions: colPos, sizes: colSizes } = ratioLayout(RATIOS, RATIO_TOTAL);
+  const { positions: rowPos, sizes: rowSizes } = ratioLayout(RATIOS, RATIO_TOTAL);
 
   for (let i = 0; i < TOTAL_TILES; i++) {
     const row = Math.floor(i / 5);
@@ -91,19 +99,17 @@ function buildGrid() {
     const tile = document.createElement("div");
     tile.className = "tile";
     tile.id = `tile-${i}`;
-    tile.dataset.row = row;
 
-    // background-size covers the full image across all tiles;
-    // background-position places this tile's slice correctly.
-    // We use the cumulative offset of each col/row.
-    tile.style.backgroundImage = `url('${IMAGE_URL}')`;
-    tile.style.backgroundSize = "100% 100%";
-    tile.style.backgroundPosition = `${colOffsets[col]}% ${rowOffsets[row]}%`;
+    // Position using percentages; inset by half a gap on each edge
+    // so tiles sit flush with gaps between them
+    const halfGap = GAP_PX / 2;
+    tile.style.left   = `calc(${colPos[col]}% + ${col === 0 ? 0 : halfGap}px)`;
+    tile.style.top    = `calc(${rowPos[row]}% + ${row === 0 ? 0 : halfGap}px)`;
+    tile.style.width  = `calc(${colSizes[col]}% - ${col === 0 || col === 4 ? halfGap : GAP_PX}px)`;
+    tile.style.height = `calc(${rowSizes[row]}% - ${row === 0 || row === 4 ? halfGap : GAP_PX}px)`;
 
     grid.appendChild(tile);
   }
-
-  window.addEventListener("resize", setHeights, { passive: true });
 }
 
 // ─────────────────────────────────────────────
@@ -149,7 +155,7 @@ function startQuiz() {
   $("layout").style.display = "grid";
   $("progress-bar").style.width = "0%";
   $("score").textContent = `0 / ${TOTAL_TILES}`;
-  $("image-hint").textContent = "Reveal all 9 tiles to unlock the secret";
+  $("image-hint").textContent = "Reveal all 25 tiles to unlock the secret";
 
   buildGrid();
   loadQuestion();
