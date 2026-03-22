@@ -200,7 +200,6 @@ function startQuiz() {
   $("secret-overlay").style.display = "none";
   $("end-screen").style.display = "none";
   $("layout").style.display = "grid";
-  $("progress-bar").style.width = "0%";
   $("score").textContent = `0 / ${TOTAL_TILES}`;
   $("image-hint").textContent = "Reveal all 25 tiles to unlock the secret";
 
@@ -220,7 +219,6 @@ function loadQuestion() {
   $("q-counter").textContent = `${tilesLeft} tile${tilesLeft !== 1 ? "s" : ""} to go`;
   $("q-category").textContent = q.category;
   $("question-text").textContent = q.question;
-  $("progress-bar").style.width = `${(revealedTiles.length / TOTAL_TILES) * 100}%`;
 
   // Choices
   const choicesEl = $("choices");
@@ -305,7 +303,6 @@ $("btn-next").addEventListener("click", () => {
 // ─────────────────────────────────────────────
 function showSecret() {
   $("layout").style.display = "none";
-  $("progress-bar").style.width = "100%";
   $("secret-msg").textContent = SECRET_MESSAGE;
   $("secret-overlay").style.display = "flex";
 }
