@@ -11,7 +11,7 @@
   --accent: #9b2fc2;
   --accent-hover: #b84fd4;
   --text: #ede9f6;
-  --muted: #7a4d72;
+  --muted: #9e6496;
   --correct: #47ff8a;
   --wrong: #ff4747;
   --logo: #f97316;
@@ -124,7 +124,7 @@ main {
 }
 
 .image-hint {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   letter-spacing: 0.04em;
   color: var(--muted);
   text-align: center;
@@ -151,7 +151,7 @@ main {
 }
 
 #q-counter {
-  font-size: 1.02rem;
+  font-size: 1.125rem;
   letter-spacing: 0.02em;
   color: var(--muted);
 }

@@ -19,6 +19,8 @@ let pendingQueue = [];         // unanswered/wrong questions, shuffled
 let pendingSet = new Set();    // fast lookup for pendingQueue contents
 let currentQuestionIndex = 0;
 let lastAnswerCorrect = null; // null = start of game, true/false thereafter
+let lastFeedbackMsg = null;
+let lastCounterMsg = null;
 
 const MSGS_CORRECT = [
   "Ex-cellent. :)",
@@ -41,7 +43,20 @@ const MSGS_COUNTER_BAD = [
   "Can we take… a few steps back?",
 ];
 
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function pickExcluding(arr, exclude) {
+  const pool = arr.length > 1 ? arr.filter(m => m !== exclude) : arr;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function pickFeedback(arr) {
+  const msg = pickExcluding(arr, lastFeedbackMsg);
+  lastFeedbackMsg = msg;
+  return msg;
+}
+function pickCounter(arr) {
+  const msg = pickExcluding(arr, lastCounterMsg);
+  lastCounterMsg = msg;
+  return msg;
+}
 
 // ─────────────────────────────────────────────
 //  HELPERS
@@ -104,7 +119,6 @@ function buildGrid() {
   // Layer 1: sharp image (bottom)
   const img = document.createElement("img");
   img.className = "grid-img";
-  img.crossOrigin = "anonymous";
   img.src = IMAGE_URL;
   img.alt = "";
   grid.appendChild(img);
@@ -121,12 +135,19 @@ function buildGrid() {
     const h = Math.round(img.naturalHeight * (w / img.naturalWidth));
     grid.style.height = h + "px";
 
-    // Draw image into canvas at display size, then blur via StackBlur
+    // Draw image into canvas at display size, then blur via box blur
     canvas.width  = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, w, h);
-    stackBlurCanvas(canvas, 0, 0, w, h, 32);
+    try {
+      ctx.drawImage(img, 0, 0, w, h);
+      stackBlurCanvas(canvas, 0, 0, w, h, 32);
+    } catch (e) {
+      // Tainted canvas fallback: use CSS filter on the canvas element
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.style.filter = "blur(40px)";
+      canvas.style.transform = "scale(1.12)";
+    }
 
     setTileBackgrounds(w, h);
   };
@@ -199,7 +220,6 @@ function pickReblurVictim() {
 }
 
 function updateScore() {
-  $("score").textContent = `${revealedTiles.length} / ${TOTAL_TILES}`;
 }
 
 // ─────────────────────────────────────────────
@@ -231,11 +251,12 @@ function startQuiz() {
   pendingQueue = [];
   pendingSet = new Set();
   lastAnswerCorrect = null;
+  lastFeedbackMsg = null;
+  lastCounterMsg = null;
 
   $("secret-overlay").style.display = "none";
   $("end-screen").style.display = "none";
   $("layout").style.display = "grid";
-  $("score").textContent = `0 / ${TOTAL_TILES}`;
 
   buildGrid();
   loadQuestion();
@@ -249,7 +270,7 @@ function loadQuestion() {
   currentQuestionIndex = nextQuestion();
   const q = QUESTIONS[currentQuestionIndex];
 
-  $("q-counter").textContent = (lastAnswerCorrect === false) ? pick(MSGS_COUNTER_BAD) : pick(MSGS_COUNTER_GOOD);
+  $("q-counter").textContent = (lastAnswerCorrect === false) ? pickCounter(MSGS_COUNTER_BAD) : pickCounter(MSGS_COUNTER_GOOD);
   $("q-category").textContent = q.category || "";
   $("question-text").textContent = q.question;
 
@@ -296,7 +317,7 @@ function handleAnswer(selected, correct, btn) {
     const tileIndex = tilePool.pop();
     revealTile(tileIndex);
 
-    $("feedback").textContent = pick(MSGS_CORRECT);
+    $("feedback").textContent = pickFeedback(MSGS_CORRECT);
     $("feedback").className = "feedback correct";
 
     allBtns.forEach(b => {
@@ -317,7 +338,7 @@ function handleAnswer(selected, correct, btn) {
 
     const victim = pickReblurVictim();
     if (victim !== null) reblurTile(victim);
-    $("feedback").textContent = pick(MSGS_WRONG);
+    $("feedback").textContent = pickFeedback(MSGS_WRONG);
     $("feedback").className = "feedback wrong";
   }
 
