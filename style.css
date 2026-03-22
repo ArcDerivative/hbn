@@ -111,8 +111,8 @@ main {
 
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: 1fr 2fr 3fr 2fr 1fr;
+  grid-template-rows: 1fr 2fr 3fr 2fr 1fr;
   gap: 3px;
   border-radius: 2px;
   overflow: hidden;
@@ -124,7 +124,7 @@ main {
 .tile {
   position: relative;
   overflow: hidden;
-  background-size: 300% 300%;
+  background-size: 100% 100%;
   transition: filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   filter: blur(var(--blur-amount)) brightness(0.5) saturate(0.3);
@@ -138,16 +138,7 @@ main {
   transform: scale(1);
 }
 
-/* Flash animations — operate on outline only, don't touch filter/transform */
-.tile.flash-correct {
-  outline: 3px solid var(--correct);
-  outline-offset: -3px;
-}
-
-.tile.flash-wrong {
-  outline: 3px solid var(--wrong);
-  outline-offset: -3px;
-}
+/* No outline flash — outlines bleed past tile edges */
 
 .image-hint {
   font-size: 0.7rem;

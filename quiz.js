@@ -6,72 +6,22 @@
 // Swap this URL for any image you like.
 const IMAGE_URL = "nad.png";
 
-// Shown when all 9 tiles are revealed.
+// Shown when all 25 tiles are revealed.
 const SECRET_MESSAGE = "Animals are awesome 🐾";
 
-// All 9 questions. Exactly 9 — one per tile.
-// You can reorder them; they are asked in order.
 const QUESTIONS = [
   {
-    category: "Animals",
-    question: "What do cows drink?",
-    choices: ["Milk", "Water", "Juice", "Tea"],
-    answer: "Water",
-  },
-  {
-    category: "Animals",
-    question: "How many legs does a spider have?",
-    choices: ["6", "8", "10", "4"],
-    answer: "8",
-  },
-  {
-    category: "Animals",
-    question: "What is the fastest land animal?",
-    choices: ["Lion", "Horse", "Cheetah", "Greyhound"],
-    answer: "Cheetah",
-  },
-  {
-    category: "Animals",
-    question: "Which animal is known as man's best friend?",
-    choices: ["Cat", "Rabbit", "Dog", "Horse"],
-    answer: "Dog",
-  },
-  {
-    category: "Animals",
-    question: "What sound does a duck make?",
-    choices: ["Moo", "Quack", "Oink", "Baa"],
-    answer: "Quack",
-  },
-  {
-    category: "Animals",
-    question: "Which animal has a very long neck?",
-    choices: ["Elephant", "Hippo", "Giraffe", "Zebra"],
-    answer: "Giraffe",
-  },
-  {
-    category: "Animals",
-    question: "Where do penguins live in the wild?",
-    choices: ["The Arctic", "The Sahara", "The Amazon", "Antarctica"],
-    answer: "Antarctica",
-  },
-  {
-    category: "Animals",
-    question: "What is a baby cat called?",
-    choices: ["Pup", "Cub", "Kitten", "Foal"],
-    answer: "Kitten",
-  },
-  {
-    category: "Animals",
-    question: "Which animal is the largest on Earth?",
-    choices: ["Elephant", "Blue Whale", "Giraffe", "Great White Shark"],
-    answer: "Blue Whale",
+    category: "",
+    question: "Is this question just a test?",
+    choices: ["Yes", "No", "No", "No"],
+    answer: "Yes",
   },
 ];
 
 // ─────────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────────
-const TOTAL_TILES = 9;
+const TOTAL_TILES = 25;
 let revealedTiles = [];   // indices of currently-revealed tiles
 let tilePool = [];        // unrevealed tile indices available to assign
 let answered = false;
@@ -98,39 +48,62 @@ function pickRandom(arr) {
 // ─────────────────────────────────────────────
 //  BUILD TILE GRID
 // ─────────────────────────────────────────────
+// Column/row fractional weights for the 5×5 grid (must sum consistently)
+const RATIOS = [1, 2, 3, 2, 1]; // ratio 1:2:3:2:1
+const RATIO_TOTAL = RATIOS.reduce((a, b) => a + b, 0); // 9
+
+// Cumulative offsets as percentages of total, for background-position
+function ratioOffsets(ratios, total) {
+  const offsets = [0];
+  let cum = 0;
+  for (let i = 0; i < ratios.length - 1; i++) {
+    cum += ratios[i];
+    offsets.push(cum / total * 100);
+  }
+  return offsets; // [0, 11.11, 33.33, 66.67, 77.78] roughly
+}
+
 function buildGrid() {
   const grid = $("tile-grid");
   grid.innerHTML = "";
 
-  // Pre-load image to get natural dimensions, then set tile heights
+  const colOffsets = ratioOffsets(RATIOS, RATIO_TOTAL);
+  const rowOffsets = ratioOffsets(RATIOS, RATIO_TOTAL);
+
   const probe = new Image();
-  probe.onload = () => {
-    const tileH = Math.round((probe.naturalHeight / 3) * (grid.offsetWidth / probe.naturalWidth));
-    grid.querySelectorAll(".tile").forEach(t => t.style.height = tileH + "px");
+  const setHeights = () => {
+    if (!probe.naturalHeight) return;
+    const totalH = Math.round(probe.naturalHeight * (grid.offsetWidth / probe.naturalWidth));
+    // Each row's pixel height proportional to its ratio
+    const rowHeights = RATIOS.map(r => Math.round(totalH * r / RATIO_TOTAL));
+    grid.querySelectorAll(".tile").forEach(t => {
+      const row = parseInt(t.dataset.row);
+      t.style.height = rowHeights[row] + "px";
+    });
   };
+  probe.onload = setHeights;
   probe.src = IMAGE_URL;
 
-  // 3×3 grid: each tile shows a different 1/9 slice of the image
   for (let i = 0; i < TOTAL_TILES; i++) {
-    const row = Math.floor(i / 3); // 0,1,2
-    const col = i % 3;             // 0,1,2
+    const row = Math.floor(i / 5);
+    const col = i % 5;
 
     const tile = document.createElement("div");
     tile.className = "tile";
     tile.id = `tile-${i}`;
+    tile.dataset.row = row;
 
+    // background-size covers the full image across all tiles;
+    // background-position places this tile's slice correctly.
+    // We use the cumulative offset of each col/row.
     tile.style.backgroundImage = `url('${IMAGE_URL}')`;
-    tile.style.backgroundSize = "300% 300%";
-    tile.style.backgroundPosition = `${col * 50}% ${row * 50}%`;
+    tile.style.backgroundSize = "100% 100%";
+    tile.style.backgroundPosition = `${colOffsets[col]}% ${rowOffsets[row]}%`;
 
     grid.appendChild(tile);
   }
 
-  // Also recompute on resize
-  window.addEventListener("resize", () => {
-    const tileH = Math.round((probe.naturalHeight / 3) * (grid.offsetWidth / probe.naturalWidth));
-    grid.querySelectorAll(".tile").forEach(t => t.style.height = tileH + "px");
-  }, { passive: true });
+  window.addEventListener("resize", setHeights, { passive: true });
 }
 
 // ─────────────────────────────────────────────
@@ -138,23 +111,17 @@ function buildGrid() {
 // ─────────────────────────────────────────────
 function revealTile(index) {
   const tile = $(`tile-${index}`);
-  tile.classList.remove("flash-wrong");
   tile.classList.add("revealed");
-  setTimeout(() => tile.classList.add("flash-correct"), 50);
-  setTimeout(() => tile.classList.remove("flash-correct"), 650);
   revealedTiles.push(index);
   updateScore();
 }
 
 function reblurTile(index) {
   const tile = $(`tile-${index}`);
-  tile.classList.add("flash-wrong");
-  setTimeout(() => {
-    tile.classList.remove("revealed", "flash-wrong");
-    revealedTiles = revealedTiles.filter(t => t !== index);
-    tilePool.push(index);
-    updateScore();
-  }, 400);
+  tile.classList.remove("revealed");
+  revealedTiles = revealedTiles.filter(t => t !== index);
+  tilePool.push(index);
+  updateScore();
 }
 
 function updateScore() {
