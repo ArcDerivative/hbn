@@ -18,6 +18,30 @@ let correctlyAnswered = new Set(); // indices of questions answered correctly
 let pendingQueue = [];         // unanswered/wrong questions, shuffled
 let pendingSet = new Set();    // fast lookup for pendingQueue contents
 let currentQuestionIndex = 0;
+let lastAnswerCorrect = null; // null = start of game, true/false thereafter
+
+const MSGS_CORRECT = [
+  "Ex-cellent. :)",
+  "This is solid work. A few small things…",
+  "Exciting times!",
+];
+const MSGS_WRONG = [
+  "D’ah!",
+  "*blink, blink*",
+  "🚨 糟糕了…",
+];
+const MSGS_COUNTER_GOOD = [
+  "Can you remind me…",
+  "Keep the good times rolling!",
+  "I’d give it fair odds you’ll make it.",
+];
+const MSGS_COUNTER_BAD = [
+  "I think things are o-kay. :)",
+  "I’m getting a little motion sick.",
+  "Can we take… a few steps back?",
+];
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 // ─────────────────────────────────────────────
 //  HELPERS
@@ -206,6 +230,7 @@ function startQuiz() {
   correctlyAnswered = new Set();
   pendingQueue = [];
   pendingSet = new Set();
+  lastAnswerCorrect = null;
 
   $("secret-overlay").style.display = "none";
   $("end-screen").style.display = "none";
@@ -224,7 +249,7 @@ function loadQuestion() {
   currentQuestionIndex = nextQuestion();
   const q = QUESTIONS[currentQuestionIndex];
 
-  $("q-counter").textContent = "TODO";
+  $("q-counter").textContent = (lastAnswerCorrect === false) ? pick(MSGS_COUNTER_BAD) : pick(MSGS_COUNTER_GOOD);
   $("q-category").textContent = q.category || "";
   $("question-text").textContent = q.question;
 
@@ -232,13 +257,14 @@ function loadQuestion() {
   const choicesEl = $("choices");
   choicesEl.innerHTML = "";
   const keys = ["A", "B", "C", "D"];
+  const answer = q.choices[0];
   const shuffled = shuffle(q.choices);
 
   shuffled.forEach((choice, i) => {
     const btn = document.createElement("button");
     btn.className = "choice-btn";
     btn.innerHTML = `<span class="key">${keys[i]}</span>${choice}`;
-    btn.addEventListener("click", () => handleAnswer(choice, q.answer, btn));
+    btn.addEventListener("click", () => handleAnswer(choice, answer, btn));
     choicesEl.appendChild(btn);
   });
 
@@ -265,11 +291,12 @@ function handleAnswer(selected, correct, btn) {
   if (selected === correct) {
     btn.classList.add("correct");
     correctlyAnswered.add(currentQuestionIndex);
+    lastAnswerCorrect = true;
 
     const tileIndex = tilePool.pop();
     revealTile(tileIndex);
 
-    $("feedback").textContent = "Yes";
+    $("feedback").textContent = pick(MSGS_CORRECT);
     $("feedback").className = "feedback correct";
 
     allBtns.forEach(b => {
@@ -281,6 +308,7 @@ function handleAnswer(selected, correct, btn) {
       if (b.textContent.includes(correct)) b.classList.add("correct");
     });
 
+    lastAnswerCorrect = false;
     // Re-add this question to pending if not already queued
     if (!pendingSet.has(currentQuestionIndex)) {
       pendingQueue.push(currentQuestionIndex);
@@ -289,7 +317,7 @@ function handleAnswer(selected, correct, btn) {
 
     const victim = pickReblurVictim();
     if (victim !== null) reblurTile(victim);
-    $("feedback").textContent = "No";
+    $("feedback").textContent = pick(MSGS_WRONG);
     $("feedback").className = "feedback wrong";
   }
 
