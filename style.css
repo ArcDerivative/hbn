@@ -225,6 +225,7 @@ main {
 
 /* ── NEXT BUTTON ── */
 .btn-next {
+  font-weight: bold;
   align-self: flex-end;
   background: var(--accent);
   color: #000;

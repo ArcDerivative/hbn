@@ -29,7 +29,7 @@
   {
     "question": "Back in the Kirkland era, Dad once took Caleb to:",
     "choices": [
-      "Portland, where we ate Pepperidge Farm cookies from the hotel",
+      "Portland, where we ate Pepperidge Farm cookies from the reception",
       "Singapore, where the kids ordered sago malacca wherever it was offered",
       "Great Wolf Lodge, where we still couldn't figure out the difference between fudge and one other thing",
       "Home Depot; we then made lightsabers that would have been wildly too big for ~4 year old Caleb"
@@ -54,12 +54,12 @@
     ]
   },
   {
-    "question": "How many legs does a dog have?",
+    "question": "Caleb once saw Dad in a towel and eventually changed the topic to:",
     "choices": [
-      "4",
-      "2",
-      "3",
-      "6"
+      "the role of mantissas and exponents in floating-point arithmetic",
+      "dominant and recessive genetics (\"why the flowers mostly turned out red\")",
+      "simulating binary computations with a subset of the standard logic gates",
+      "Caleb's own suspicion that he might have a form of Asperger's"
     ]
   },
   {
