@@ -72,10 +72,10 @@ const QUESTIONS = [
 //  STATE
 // ─────────────────────────────────────────────
 const TOTAL_TILES = 9;
-let current = 0;
 let revealedTiles = [];   // indices of currently-revealed tiles
-let tilePool = [];        // unrevealedtile indices available to assign
+let tilePool = [];        // unrevealed tile indices available to assign
 let answered = false;
+let questionQueue = [];   // infinite shuffled queue of question indices
 
 // ─────────────────────────────────────────────
 //  HELPERS
@@ -102,6 +102,14 @@ function buildGrid() {
   const grid = $("tile-grid");
   grid.innerHTML = "";
 
+  // Pre-load image to get natural dimensions, then set tile heights
+  const probe = new Image();
+  probe.onload = () => {
+    const tileH = Math.round((probe.naturalHeight / 3) * (grid.offsetWidth / probe.naturalWidth));
+    grid.querySelectorAll(".tile").forEach(t => t.style.height = tileH + "px");
+  };
+  probe.src = IMAGE_URL;
+
   // 3×3 grid: each tile shows a different 1/9 slice of the image
   for (let i = 0; i < TOTAL_TILES; i++) {
     const row = Math.floor(i / 3); // 0,1,2
@@ -111,15 +119,18 @@ function buildGrid() {
     tile.className = "tile";
     tile.id = `tile-${i}`;
 
-    // Position the background so this tile shows its slice.
-    // background-size: 300% 300% means the full image spans 3 tiles wide & tall.
-    // background-position shifts by col/row thirds.
     tile.style.backgroundImage = `url('${IMAGE_URL}')`;
     tile.style.backgroundSize = "300% 300%";
     tile.style.backgroundPosition = `${col * 50}% ${row * 50}%`;
 
     grid.appendChild(tile);
   }
+
+  // Also recompute on resize
+  window.addEventListener("resize", () => {
+    const tileH = Math.round((probe.naturalHeight / 3) * (grid.offsetWidth / probe.naturalWidth));
+    grid.querySelectorAll(".tile").forEach(t => t.style.height = tileH + "px");
+  }, { passive: true });
 }
 
 // ─────────────────────────────────────────────
@@ -153,14 +164,22 @@ function updateScore() {
 // ─────────────────────────────────────────────
 //  START
 // ─────────────────────────────────────────────
+function nextQuestion() {
+  // Refill queue when empty (infinite shuffle loop)
+  if (questionQueue.length === 0) {
+    questionQueue = shuffle([...Array(QUESTIONS.length).keys()]);
+  }
+  return questionQueue.shift();
+}
+
 function startQuiz() {
-  current = 0;
   revealedTiles = [];
-  tilePool = shuffle([...Array(TOTAL_TILES).keys()]); // [0..8] shuffled
+  tilePool = shuffle([...Array(TOTAL_TILES).keys()]);
+  questionQueue = [];
 
   $("secret-overlay").style.display = "none";
   $("end-screen").style.display = "none";
-  $("layout").style.display = "grid";
+  $("layout").style.display = "flex";
   $("progress-bar").style.width = "0%";
   $("score").textContent = `0 / ${TOTAL_TILES}`;
   $("image-hint").textContent = "Reveal all 9 tiles to unlock the secret";
@@ -174,12 +193,14 @@ function startQuiz() {
 // ─────────────────────────────────────────────
 function loadQuestion() {
   answered = false;
-  const q = QUESTIONS[current];
+  const qi = nextQuestion();
+  const q = QUESTIONS[qi];
+  const tilesLeft = TOTAL_TILES - revealedTiles.length;
 
-  $("q-counter").textContent = `Question ${current + 1} / ${TOTAL_TILES}`;
+  $("q-counter").textContent = `${tilesLeft} tile${tilesLeft !== 1 ? "s" : ""} to go`;
   $("q-category").textContent = q.category;
   $("question-text").textContent = q.question;
-  $("progress-bar").style.width = `${(current / TOTAL_TILES) * 100}%`;
+  $("progress-bar").style.width = `${(revealedTiles.length / TOTAL_TILES) * 100}%`;
 
   // Choices
   const choicesEl = $("choices");
@@ -252,21 +273,11 @@ function handleAnswer(selected, correct, btn) {
 //  NEXT
 // ─────────────────────────────────────────────
 $("btn-next").addEventListener("click", () => {
-  current++;
-
-  // Win condition: all 9 tiles revealed
   if (revealedTiles.length === TOTAL_TILES) {
     showSecret();
-    return;
+  } else {
+    loadQuestion();
   }
-
-  // Out of questions
-  if (current >= TOTAL_TILES) {
-    showEndScreen();
-    return;
-  }
-
-  loadQuestion();
 });
 
 // ─────────────────────────────────────────────
@@ -277,22 +288,6 @@ function showSecret() {
   $("progress-bar").style.width = "100%";
   $("secret-msg").textContent = SECRET_MESSAGE;
   $("secret-overlay").style.display = "flex";
-}
-
-// ─────────────────────────────────────────────
-//  END SCREEN
-// ─────────────────────────────────────────────
-function showEndScreen() {
-  $("layout").style.display = "none";
-  $("progress-bar").style.width = "100%";
-  $("end-score").textContent = `${revealedTiles.length} / ${TOTAL_TILES} tiles`;
-
-  const remaining = TOTAL_TILES - revealedTiles.length;
-  $("end-msg").textContent = remaining === 0
-    ? "You cleared every tile but ran out of questions — something went wrong!"
-    : `You needed ${remaining} more tile${remaining > 1 ? "s" : ""} to unlock the secret. So close!`;
-
-  $("end-screen").style.display = "block";
 }
 
 // ─────────────────────────────────────────────

@@ -91,10 +91,9 @@ main {
 .layout {
   width: 100%;
   max-width: 860px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  align-items: start;
 }
 
 /* ── IMAGE SIDE ── */
@@ -109,7 +108,6 @@ main {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 3px;
-  aspect-ratio: 1 / 1;
   border-radius: 2px;
   overflow: hidden;
   background: #080808;
@@ -119,11 +117,13 @@ main {
 .tile {
   position: relative;
   overflow: hidden;
-  background-size: 300% 300%; /* 3x zoom so each tile shows 1/9 of image */
+  background-size: 300% 300%;
   transition: filter 0.7s cubic-bezier(0.4, 0, 0.2, 1),
               transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   filter: blur(var(--blur-amount)) brightness(0.5) saturate(0.3);
   transform: scale(1.08);
+  /* height is set by JS once image loads */
+  min-height: 80px;
 }
 
 .tile.revealed {
@@ -368,6 +368,5 @@ main {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 620px) {
-  .layout { grid-template-columns: 1fr; }
   .tile-grid { max-width: 100%; }
 }
