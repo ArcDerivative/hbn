@@ -2,7 +2,7 @@
 //  CONFIG
 // ─────────────────────────────────────────────
 const IMAGE_URL = "nad.png";
-const SECRET_MESSAGE = "Animals are awesome 🐾";
+const SECRET_MESSAGE = "now read the letter <3";
 
 let QUESTIONS = []; // loaded from questions.json
 
