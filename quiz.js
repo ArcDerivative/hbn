@@ -179,7 +179,7 @@ function startQuiz() {
 
   $("secret-overlay").style.display = "none";
   $("end-screen").style.display = "none";
-  $("layout").style.display = "flex";
+  $("layout").style.display = "grid";
   $("progress-bar").style.width = "0%";
   $("score").textContent = `0 / ${TOTAL_TILES}`;
   $("image-hint").textContent = "Reveal all 9 tiles to unlock the secret";
