@@ -5,21 +5,23 @@
 }
 
 :root {
-  --bg: #0a0d12;
-  --card: #0f1420;
-  --border: #1e2535;
-  --accent: #4a7fff;
-  --text: #e8edf5;
-  --muted: #4a5568;
+  --bg: #0e0818;
+  --card: #160d24;
+  --border: #2e1a4a;
+  --accent: #7c3aed;
+  --accent-hover: #9d5cf6;
+  --text: #ede9f6;
+  --muted: #6b5a8a;
   --correct: #47ff8a;
   --wrong: #ff4747;
+  --logo: #f97316;
   --blur-amount: 18px;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -39,30 +41,13 @@ header {
 }
 
 .logo {
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: 1.8rem;
   letter-spacing: 0.08em;
-  color: var(--accent);
+  color: var(--logo);
 }
 
-.score-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.05rem;
-}
-#score-label {
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  color: var(--muted);
-  text-transform: uppercase;
-}
-#score {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.5rem;
-  color: var(--accent);
-  line-height: 1;
-}
+.score-wrap { display: none; }
 
 /* ── LAYOUT ── */
 main {
@@ -113,14 +98,11 @@ main {
 /* Blurred image — sits directly on top of the sharp one, full size */
 .tile-grid .grid-img-blur {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -60px;
+  width: calc(100% + 120px);
+  height: calc(100% + 120px);
   object-fit: cover;
-  filter: blur(40px) saturate(1.1);
-  /* scale up slightly so blur edges don't show */
-  transform: scale(1.08);
-  transform-origin: center;
+  filter: blur(60px);
   pointer-events: none;
 }
 
@@ -178,7 +160,7 @@ main {
 #q-category { display: none; }
 
 #question-text {
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: clamp(1rem, 2.2vw, 1.5rem);
   line-height: 1.25;
   letter-spacing: 0.01em;
@@ -197,7 +179,7 @@ main {
   color: var(--text);
   padding: 0.7rem 1rem;
   text-align: left;
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: clamp(0.75rem, 1.4vw, 0.87rem);
   cursor: pointer;
   border-radius: 1px;
@@ -210,7 +192,7 @@ main {
 }
 
 .choice-btn .key {
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: 0.82rem;
   color: var(--muted);
   letter-spacing: 0.1em;
@@ -220,7 +202,7 @@ main {
 
 .choice-btn:hover:not(:disabled) {
   border-color: var(--accent);
-  background: rgba(232,255,71,0.05);
+  background: rgba(124,58,237,0.1);
   transform: translateX(2px);
 }
 .choice-btn:hover:not(:disabled) .key { color: var(--accent); }
@@ -249,14 +231,14 @@ main {
   color: #000;
   border: none;
   padding: 0.75rem 2rem;
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: 1rem;
   letter-spacing: 0.12em;
   cursor: pointer;
   border-radius: 1px;
   transition: all 0.13s ease;
 }
-.btn-next:hover { background: #fff; transform: translateX(2px); }
+.btn-next:hover { background: var(--accent-hover); transform: translateX(2px); }
 
 /* ── SECRET OVERLAY ── */
 .secret-overlay {
@@ -288,7 +270,7 @@ main {
 }
 
 .secret-msg {
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: clamp(2rem, 6vw, 4rem);
   letter-spacing: 0.1em;
   line-height: 1.1;
@@ -314,14 +296,14 @@ main {
 }
 
 .end-title {
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: 2rem;
   letter-spacing: 0.15em;
   color: var(--muted);
 }
 
 .end-score {
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: 4.5rem;
   color: var(--accent);
   line-height: 1;
@@ -340,14 +322,14 @@ main {
   border: 1px solid var(--accent);
   color: var(--accent);
   padding: 0.8rem 2.5rem;
-  font-family: 'Inter', sans-serif;
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   font-size: 1rem;
   letter-spacing: 0.15em;
   cursor: pointer;
   border-radius: 1px;
   transition: all 0.13s ease;
 }
-.btn-restart:hover { background: var(--accent); color: #000; }
+.btn-restart:hover { background: var(--accent); color: var(--text); }
 
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {

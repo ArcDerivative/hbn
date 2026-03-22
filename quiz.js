@@ -201,7 +201,6 @@ function startQuiz() {
   $("end-screen").style.display = "none";
   $("layout").style.display = "grid";
   $("score").textContent = `0 / ${TOTAL_TILES}`;
-  $("image-hint").textContent = "Reveal all 25 tiles to unlock the secret";
 
   buildGrid();
   loadQuestion();
@@ -216,7 +215,7 @@ function loadQuestion() {
   const q = QUESTIONS[qi];
   const tilesLeft = TOTAL_TILES - revealedTiles.length;
 
-  $("q-counter").textContent = `${tilesLeft} tile${tilesLeft !== 1 ? "s" : ""} to go`;
+  $("q-counter").textContent = "TODO";
   $("q-category").textContent = q.category;
   $("question-text").textContent = q.question;
 
