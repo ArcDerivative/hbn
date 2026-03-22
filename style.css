@@ -129,8 +129,8 @@ main {
 /* Blur overlays — absolutely positioned over the image */
 .tile {
   position: absolute;
-  backdrop-filter: blur(14px) brightness(0.5) saturate(0.3);
-  -webkit-backdrop-filter: blur(14px) brightness(0.5) saturate(0.3);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   transition: backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               -webkit-backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.35s ease;
@@ -139,8 +139,8 @@ main {
 }
 
 .tile.revealed {
-  backdrop-filter: blur(0px) brightness(1) saturate(1);
-  -webkit-backdrop-filter: blur(0px) brightness(1) saturate(1);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
   opacity: 0;
   pointer-events: none;
 }

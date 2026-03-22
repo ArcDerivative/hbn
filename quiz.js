@@ -49,8 +49,10 @@ function pickRandom(arr) {
 //  BUILD TILE GRID
 // ─────────────────────────────────────────────
 // Column/row fractional weights for the 5×5 grid (must sum consistently)
-const RATIOS = [1, 2, 3, 2, 1]; // ratio 1:2:3:2:1
-const RATIO_TOTAL = RATIOS.reduce((a, b) => a + b, 0); // 9
+const COL_RATIOS = [1, 2, 3, 2, 1];
+const ROW_RATIOS = [1, 4, 3, 2, 1];
+const COL_TOTAL = COL_RATIOS.reduce((a, b) => a + b, 0); // 9
+const ROW_TOTAL = ROW_RATIOS.reduce((a, b) => a + b, 0); // 11
 
 // Convert ratio array to cumulative percentage positions and sizes
 // e.g. [1,2,3,2,1] total=9 → positions: [0, 11.11, 33.33, 66.67, 77.78]
@@ -66,7 +68,7 @@ function ratioLayout(ratios, total) {
   return { positions, sizes };
 }
 
-const GAP_PX = 3; // matches CSS gap visually via inset
+const GAP_PX = 0;
 
 function buildGrid() {
   const grid = $("tile-grid");
@@ -89,8 +91,8 @@ function buildGrid() {
   window.addEventListener("resize", setGridHeight, { passive: true });
 
   // Build 25 absolutely-positioned blur overlay tiles
-  const { positions: colPos, sizes: colSizes } = ratioLayout(RATIOS, RATIO_TOTAL);
-  const { positions: rowPos, sizes: rowSizes } = ratioLayout(RATIOS, RATIO_TOTAL);
+  const { positions: colPos, sizes: colSizes } = ratioLayout(COL_RATIOS, COL_TOTAL);
+  const { positions: rowPos, sizes: rowSizes } = ratioLayout(ROW_RATIOS, ROW_TOTAL);
 
   for (let i = 0; i < TOTAL_TILES; i++) {
     const row = Math.floor(i / 5);
@@ -102,11 +104,10 @@ function buildGrid() {
 
     // Position using percentages; inset by half a gap on each edge
     // so tiles sit flush with gaps between them
-    const halfGap = GAP_PX / 2;
-    tile.style.left   = `calc(${colPos[col]}% + ${col === 0 ? 0 : halfGap}px)`;
-    tile.style.top    = `calc(${rowPos[row]}% + ${row === 0 ? 0 : halfGap}px)`;
-    tile.style.width  = `calc(${colSizes[col]}% - ${col === 0 || col === 4 ? halfGap : GAP_PX}px)`;
-    tile.style.height = `calc(${rowSizes[row]}% - ${row === 0 || row === 4 ? halfGap : GAP_PX}px)`;
+    tile.style.left   = `${colPos[col]}%`;
+    tile.style.top    = `${rowPos[row]}%`;
+    tile.style.width  = `${colSizes[col]}%`;
+    tile.style.height = `${rowSizes[row]}%`;
 
     grid.appendChild(tile);
   }
