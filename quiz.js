@@ -86,26 +86,35 @@ function buildGrid() {
   const grid = $("tile-grid");
   grid.innerHTML = "";
 
-  // Single image fills the container
+  // Layer 1: sharp image (bottom)
   const img = document.createElement("img");
   img.className = "grid-img";
   img.src = IMAGE_URL;
   img.alt = "";
   grid.appendChild(img);
 
+  // Layer 2: blurred image (middle) — same src, blurred via CSS filter
+  const imgBlur = document.createElement("img");
+  imgBlur.className = "grid-img-blur";
+  imgBlur.src = IMAGE_URL;
+  imgBlur.alt = "";
+  grid.appendChild(imgBlur);
+
   // Set grid height to match image natural aspect ratio
   const setGridHeight = () => {
     if (!img.naturalWidth) return;
     const h = Math.round(img.naturalHeight * (grid.offsetWidth / img.naturalWidth));
     grid.style.height = h + "px";
+    // Re-set tile background-sizes now we know the rendered dimensions
+    setTileBackgrounds(grid.offsetWidth, h);
   };
   img.onload = setGridHeight;
   window.addEventListener("resize", setGridHeight, { passive: true });
 
-  // Build 25 absolutely-positioned blur overlay tiles
   const { positions: colPos, sizes: colSizes } = ratioLayout(COL_RATIOS, COL_TOTAL);
   const { positions: rowPos, sizes: rowSizes } = ratioLayout(ROW_RATIOS, ROW_TOTAL);
 
+  // Layer 3: sharp-image tiles (top) — each shows its exact slice of the sharp image
   for (let i = 0; i < TOTAL_TILES; i++) {
     const row = Math.floor(i / 5);
     const col = i % 5;
@@ -113,15 +122,29 @@ function buildGrid() {
     const tile = document.createElement("div");
     tile.className = "tile";
     tile.id = `tile-${i}`;
+    tile.dataset.col = col;
+    tile.dataset.row = row;
 
-    // Position using percentages; inset by half a gap on each edge
-    // so tiles sit flush with gaps between them
     tile.style.left   = `${colPos[col]}%`;
     tile.style.top    = `${rowPos[row]}%`;
     tile.style.width  = `${colSizes[col]}%`;
     tile.style.height = `${rowSizes[row]}%`;
 
     grid.appendChild(tile);
+  }
+
+  function setTileBackgrounds(gridW, gridH) {
+    grid.querySelectorAll(".tile").forEach(tile => {
+      const col = parseInt(tile.dataset.col);
+      const row = parseInt(tile.dataset.row);
+      // background-size = full grid dimensions (so image lines up perfectly)
+      // background-position = negative offset of this tile's top-left corner
+      const left = colPos[col] / 100 * gridW;
+      const top  = rowPos[row] / 100 * gridH;
+      tile.style.backgroundImage    = `url('${IMAGE_URL}')`;
+      tile.style.backgroundSize     = `${gridW}px ${gridH}px`;
+      tile.style.backgroundPosition = `-${left}px -${top}px`;
+    });
   }
 }
 

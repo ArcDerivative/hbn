@@ -114,35 +114,44 @@ main {
   width: 100%;
   border-radius: 2px;
   overflow: hidden;
-  background: #080808;
   /* height set by JS to match image natural aspect ratio */
 }
 
-/* The actual image — fills the container completely */
+/* Sharp image — sits at the bottom of the stack */
 .tile-grid .grid-img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
 }
 
-/* Blur overlays — absolutely positioned over the image */
+/* Blurred image — sits directly on top of the sharp one, full size */
+.tile-grid .grid-img-blur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(40px) saturate(1.1);
+  /* scale up slightly so blur edges don't show */
+  transform: scale(1.08);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+/* Tiles sit above the blurred image.
+   Each tile shows the sharp image in its exact region,
+   hiding the blurred layer beneath it.
+   background-image/size/position set by JS. */
 .tile {
   position: absolute;
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  transition: backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              -webkit-backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.35s ease;
-  /* thin gap between tiles via inset */
-  box-sizing: border-box;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
 }
 
 .tile.revealed {
-  backdrop-filter: blur(0px);
-  -webkit-backdrop-filter: blur(0px);
-  opacity: 0;
-  pointer-events: none;
+  opacity: 1;
 }
 
 .image-hint {
