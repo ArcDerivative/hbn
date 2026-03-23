@@ -18,7 +18,8 @@ let correctlyAnswered = new Set(); // indices answered correctly — never shown
 let questionPool = [];             // current shuffle of remaining questions
 let currentQuestionIndex = 0;
 let lastAnswerCorrect = null; // null = start of game, true/false thereafter
-let lastFeedbackMsg = null;
+let lastFeedbackCorrectMsg = null;
+let lastFeedbackWrongMsg = null;
 let lastCounterMsg = null;
 
 const MSGS_CORRECT = [
@@ -46,9 +47,14 @@ function pickExcluding(arr, exclude) {
   const pool = arr.length > 1 ? arr.filter(m => m !== exclude) : arr;
   return pool[Math.floor(Math.random() * pool.length)];
 }
-function pickFeedback(arr) {
-  const msg = pickExcluding(arr, lastFeedbackMsg);
-  lastFeedbackMsg = msg;
+function pickFeedbackCorrect() {
+  const msg = pickExcluding(MSGS_CORRECT, lastFeedbackCorrectMsg);
+  lastFeedbackCorrectMsg = msg;
+  return msg;
+}
+function pickFeedbackWrong() {
+  const msg = pickExcluding(MSGS_WRONG, lastFeedbackWrongMsg);
+  lastFeedbackWrongMsg = msg;
   return msg;
 }
 function pickCounter(arr) {
@@ -256,7 +262,8 @@ function startQuiz() {
   correctlyAnswered = new Set();
   questionPool = [];
   lastAnswerCorrect = null;
-  lastFeedbackMsg = null;
+  lastFeedbackCorrectMsg = null;
+  lastFeedbackWrongMsg = null;
   lastCounterMsg = null;
 
   $("secret-overlay").style.display = "none";
@@ -323,7 +330,7 @@ function handleAnswer(selected, correct, btn) {
     const tileIndex = tilePool.pop();
     revealTile(tileIndex);
 
-    $("feedback").textContent = pickFeedback(MSGS_CORRECT);
+    $("feedback").textContent = pickFeedbackCorrect();
     $("feedback").className = "feedback correct";
 
     allBtns.forEach(b => {
@@ -339,7 +346,7 @@ function handleAnswer(selected, correct, btn) {
     }
     const victim = pickReblurVictim();
     if (victim !== null) reblurTile(victim);
-    $("feedback").textContent = pickFeedback(MSGS_WRONG);
+    $("feedback").textContent = pickFeedbackWrong();
     $("feedback").className = "feedback wrong";
   }
 
